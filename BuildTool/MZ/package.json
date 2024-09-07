@@ -1,0 +1,17 @@
+{
+  "name": "rpgmakerh4-buildtool-mz",
+  "version": "0.0.1",
+  "main": "index.js",
+  "scripts": {
+
+  },
+  "keywords": [],
+  "author": "h4cander",
+  "license": "MIT",
+  "description": "build tool for rpgmaker mz",
+  "dependencies": {
+    "adm-zip": "^0.5.16",
+    "axios": "^1.7.7",
+    "fs-extra": "^11.2.0"
+  }
+}
