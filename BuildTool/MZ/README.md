@@ -4,9 +4,13 @@
 
 # Example
 ```js
+
+const { BuildToolMZWin } = require("rpgmakerh4-buildtool-mz");
+const path = require("path");
+
 (async () => {
-    const mzSrcFolder = path.join(__dirname, "MZBuildSample");
-    const outFolder = path.join(__dirname, "dist", "MyGame_0_0_1");
+    const mzSrcFolder = path.join(__dirname, "MZBuildSample"); //your mz folder path to publish
+    const outFolder = path.join(__dirname, "dist", "MyGame_0_0_2");
     const mzPublishFolder = path.join(outFolder, "MyGame");
 
     //start
@@ -19,13 +23,18 @@
     await aBuildToolMZ.extractZipAsync();
 
     await aBuildToolMZ.copyBaseFilesAsync(mzPublishFolder);
-    await aBuildToolMZ.copySrcMzFilesAsync(mzSrcFolder, mzPublishFolder);
+    await aBuildToolMZ.copySrcMzFilesAsync(mzSrcFolder, mzPublishFolder, [
+        /\.js\.map$/
+    ]);
     await aBuildToolMZ.processPackageJsonAsync(mzSrcFolder, mzPublishFolder);
     await aBuildToolMZ.processSystemJsonAsync(mzSrcFolder, mzPublishFolder);
     await aBuildToolMZ.processAudiosAndImgsAsync(mzSrcFolder, mzPublishFolder);
-    await aBuildToolMZ.copyFileToDestFolderAsync("/mydocs/README.md", outFolder);
+
+    //other file you want. like credits.txt, readme.txt
+    await aBuildToolMZ.copyFileToDestFolderAsync(path.join(__dirname, "docs", "README.md"), outFolder);
 
     console.log(`${outFolder} is being compressed...`);
     await aBuildToolMZ.zipFolderAsync(outFolder);
 })();
+
 ```

@@ -267,9 +267,10 @@ class BuildToolMZWin {
         }
     }
 
-    async copySrcMzFilesAsync(mzSrcFolder, mzPublishFolder) {
+    async copySrcMzFilesAsync(mzSrcFolder, mzPublishFolder, excludes = []) {
         const srcMZFiles = this.listAllFilePath(mzSrcFolder)
-            .filter(p => !BuildToolMZWin.getMZSrcExcludes().some(e => e.test(p)));
+            .filter(p => !BuildToolMZWin.getMZSrcExcludes().some(e => e.test(p)))
+            .filter(p => !excludes.some(e => e.test(p)));
         for (let i = 0; i < srcMZFiles.length; i++) {
             const outFilePath = path.join(mzPublishFolder, srcMZFiles[i]);
             await this.copyFileAsync(
