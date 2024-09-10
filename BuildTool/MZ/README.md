@@ -1,5 +1,8 @@
 
-
+# Install
+```
+npm i rpgmakerh4-buildtool-mz
+```
 
 
 # Example
