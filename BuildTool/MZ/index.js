@@ -77,17 +77,6 @@ class BuildToolMZWin {
         ];
     }
 
-    static getMZSrcExcludes() {
-        return [
-            /audio\//,
-            /img\//,
-            /save\//,
-            /\.rmmzproject$/,
-            /package\.json$/,
-            /data\/System.json/
-        ];
-    }
-
     get _rpgMakerMZLiteUrl() {
         return "https://github.com/h4cander/RPGMakerH4/releases/download/RPGMakerMZLite_v1.8.0/RPGMakerMZLite.zip";
     }
@@ -100,10 +89,22 @@ class BuildToolMZWin {
     }
 
     /**
-     * @param {string} workDir - temp folder to process 
+     * @param {*} mzSrcExcludes
      * @param {*} encryptionKey
+     * @param {string} workDir - temp folder to process 
      */
-    constructor(workDir = null, encryptionKey = null) {
+    constructor(mzSrcExcludes = null, encryptionKey = null, workDir = null) {
+        this._mzSrcExcludes = mzSrcExcludes ?? [
+            /audio\//,
+            /audio\\/,
+            /img\//,
+            /img\\/,
+            /save\//,
+            /save\\/,
+            /\.rmmzproject$/,
+            /package\.json$/,
+            /data\/System.json/
+        ];
         this._workDir = workDir ?? path.join(__dirname, "dist");
         this._encryptionKey = encryptionKey ?? this.getRandomSubstring("0123456789abcdefghijklmnopqrstuvwxyz", 32);
         this._mzEncrypter = new MZEncrypter(this._encryptionKey);
@@ -269,7 +270,7 @@ class BuildToolMZWin {
 
     async copySrcMzFilesAsync(mzSrcFolder, mzPublishFolder, excludes = []) {
         const srcMZFiles = this.listAllFilePath(mzSrcFolder)
-            .filter(p => !BuildToolMZWin.getMZSrcExcludes().some(e => e.test(p)))
+            .filter(p => !this._mzSrcExcludes.some(e => e.test(p)))
             .filter(p => !excludes.some(e => e.test(p)));
         for (let i = 0; i < srcMZFiles.length; i++) {
             const outFilePath = path.join(mzPublishFolder, srcMZFiles[i]);
