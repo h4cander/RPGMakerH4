@@ -57,7 +57,7 @@ class MZEncrypter {
     async encrypFileAsync(srcFilePath, distFilePath) {
         const buffer = await this.readAsync(srcFilePath);
         const encryptbuffer = this.encryptArrayBuffer(buffer);
-        await fs.ensureDir(distFilePath.slice(0, distFilePath.lastIndexOf('/')));
+        await fs.ensureDir(path.dirname(distFilePath));
         await this.writeAsync(distFilePath, encryptbuffer);
     }
 }
@@ -114,7 +114,7 @@ class BuildToolMZWin {
             throw new Error("The specified length is longer than the input string.");
         }
 
-        let result = '';
+        let result = "";
         for (let i = 0; i < l; i++) {
             const randomIndex = Math.floor(Math.random() * s.length);
             result += s[randomIndex];
@@ -184,7 +184,7 @@ class BuildToolMZWin {
 
     async copyFileToDestFolderAsync(srcFilePath, destFolder) {
         await fs.ensureDir(path.dirname(destFolder));
-        const fileName = srcFilePath.split("/").pop();
+        const fileName = path.basename(srcFilePath);
         const destFilePath = path.join(destFolder, fileName);
         await fs.copy(srcFilePath, destFilePath);
         return destFilePath;
@@ -234,7 +234,7 @@ class BuildToolMZWin {
     async encrypterFolderAsync(srcFolder, destFolder) {
         const filePaths = this.listAllFilePath(srcFolder);
         for (let i = 0; i < filePaths.length; i++) {
-            const outFilePath = path.join(destFolder, srcFolder.split("/").pop(), `${filePaths[i]}_`);
+            const outFilePath = path.join(destFolder, path.basename(srcFolder), `${filePaths[i]}_`);
             await this._mzEncrypter.encrypFileAsync(path.join(srcFolder, filePaths[i]), outFilePath);
             console.log(`encrypted: ${outFilePath}`);
         }
