@@ -14,9 +14,8 @@ jobs:
         with:
           node-version: 20
           registry-url: https://registry.npmjs.org/
-      - name: cd
-        working-directory: ./BuildTool/MZ
       - run: npm publish
+        working-directory: ./BuildTool/MZ
         env:
           NODE_AUTH_TOKEN: ${{secrets.npm_token}}
       # - run: npm ci
