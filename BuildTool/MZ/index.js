@@ -67,13 +67,13 @@ class BuildToolMZWin {
 
     static getBaseExcludes() {
         return [
-            /css\//,
-            /data\//,
-            /icon\//,
-            /img\//,
-            /js\//,
-            /package\.json$/,
-            /index\.html$/
+            /css\/|css\\/i,
+            /data\/|data\\/i,
+            /icon\/|icon\\/i,
+            /img\/|img\\/i,
+            /js\/|js\\/i,
+            /package\.json$/i,
+            /index\.html$/i
         ];
     }
 
@@ -97,13 +97,14 @@ class BuildToolMZWin {
         this._mzSrcExcludes = mzSrcExcludes ?? [
             /audio\//,
             /audio\\/,
-            /img\//,
-            /img\\/,
+            /img\/(?!.*\.txt$).*$/i,
+            /img\\(?!.*\.txt$).*$/i,
             /save\//,
             /save\\/,
             /\.rmmzproject$/,
             /package\.json$/,
-            /data\/System.json/
+            /data\/System.json/,
+            /desktop.ini_$/
         ];
         this._workDir = workDir ?? path.join(__dirname, "dist");
         this._encryptionKey = encryptionKey ?? this.getRandomSubstring("0123456789abcdefghijklmnopqrstuvwxyz", 32);
@@ -210,7 +211,7 @@ class BuildToolMZWin {
                     data["chromium-args"] += " --disable-devtools";
                 }
 
-                return JSON.stringify(data);
+                return JSON.stringify(data, null, 4);
             }
         );
         console.log(`file processed: ${distFilePath}`);
@@ -232,23 +233,25 @@ class BuildToolMZWin {
         console.log(`file processed: ${distFilePath}`);
     }
 
-    async encrypterFolderAsync(srcFolder, destFolder) {
+    async encrypterFolderAsync(srcFolder, destFolder, extensions) {
         const filePaths = this.listAllFilePath(srcFolder);
         for (let i = 0; i < filePaths.length; i++) {
+            if (!extensions.some(e => filePaths[i].endsWith(e))) continue;
+
             const outFilePath = path.join(destFolder, path.basename(srcFolder), `${filePaths[i]}_`);
             await this._mzEncrypter.encrypFileAsync(path.join(srcFolder, filePaths[i]), outFilePath);
             console.log(`encrypted: ${outFilePath}`);
         }
     }
 
-    async processAudiosAndImgsAsync(srcFolder, distFolder) {
-        await this.encrypterFolderAsync(path.join(srcFolder, "audio"), distFolder)
-        await this.encrypterFolderAsync(path.join(srcFolder, "img"), distFolder)
+    async processAudiosAndImgsAsync(srcFolder, distFolder, audioExtensions = null, imgExtensions = null) {
+        await this.encrypterFolderAsync(path.join(srcFolder, "audio"), distFolder, audioExtensions ?? [".ogg", ".m4a"])
+        await this.encrypterFolderAsync(path.join(srcFolder, "img"), distFolder, imgExtensions ?? [".png", ".jpg"])
     }
 
     async zipFolderAsync(folder) {
         const zip = new AdmZip();
-        zip.addLocalFolder(folder);
+        zip.addLocalFolder(folder, path.basename(folder));
         const filePath = `${folder}.zip`;
         zip.writeZip(`${folder}.zip`);
         console.log(`compressed: ${filePath}`)
