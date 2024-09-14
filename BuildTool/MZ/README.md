@@ -18,6 +18,8 @@ const path = require("path");
 
     //start
     const aBuildToolMZ = new BuildToolMZWin();
+    //const aBuildToolMZ = new BuildToolMZWin(null, null, null);
+    //const aBuildToolMZ = new BuildToolMZWin(null, "00000000000000000000000000000000", null); 00000000000000000000000000000000 is your encryptionKey
 
     console.log("downloading zip...");
     await aBuildToolMZ.downloadRPGMakerMZLiteAsync();
